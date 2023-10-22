@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deloitte Auditor Enterprise Chat UI</title>
+</head>
+<body>
+    <div id="chatbox">
+        <!-- Chat messages will be displayed here -->
+    </div>
+    <textarea id="userInput" placeholder="Type your message or question..."></textarea>
+    <button id="send">Send</button>
+
+    <script>
+        document.getElementById('send').addEventListener('click', function() {
+            let userPrompt = document.getElementById('userInput').value;
+            if(userPrompt.trim() !== "") {
+                // Display user's message
+                document.getElementById('chatbox').innerHTML += '<div class="userMessage">' + userPrompt + '</div>';
+                
+                // Send user's prompt to Flask backend
+                fetch('/get-response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({prompt: userPrompt})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display OpenAI's response
+                    document.getElementById('chatbox').innerHTML += '<div class="systemMessage">' + data.response + '</div>';
+                    document.getElementById('userInput').value = "";
+                });
+            }
+        });
+    </script>
+
+    <style>
+        .userMessage {
+            background-color: #e6f7ff;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        .systemMessage {
+            background-color: #ffebcc;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</body>
+</html>
